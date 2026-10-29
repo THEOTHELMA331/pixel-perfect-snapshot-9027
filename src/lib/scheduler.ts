@@ -102,7 +102,6 @@ export function generateSchedule(
 
   const open = tasks.filter((t) => t.status !== "done");
   const ordered = [...open].sort((a, b) => taskScore(b, today, tasks) - taskScore(a, today, tasks));
-  const lastEnd: Record<string, number> = {};
 
   if (days.length === 0) {
     for (const t of ordered) unscheduled.push({ taskId: t.id, title: t.title, reason: "No working days in the selected period." });
@@ -121,40 +120,6 @@ export function generateSchedule(
     const passes = window ? [window, null] : [null];
 
     for (const pass of passes) {
-      for (const d of eligibleDays) {
-        if (remaining <= 0) break;
-        for (const iv of free[d]) {
-          if (remaining <= 0) break;
-          let s = iv.start;
-          let e = iv.end;
-          if (pass) {
-            s = Math.max(s, pass.start);
-            e = Math.min(e, pass.end);
-          }
-          // keep a break after previous task block on this day
-          if (lastEnd[d] !== undefined && s < lastEnd[d] + settings.breakMinutes && s >= lastEnd[d]) {
-            s = lastEnd[d] + settings.breakMinutes;
-          }
-          if (e - s < Math.min(15, remaining)) continue;
-          const len = Math.min(remaining, settings.maxSession, e - s);
-          placed.push({ taskId: t.id, title: t.title, date: d, start: s, end: s + len, kind: "task" });
-          // consume from interval
-          const used = { start: s, end: s + len + settings.breakMinutes };
-          free[d] = free[d]
-            .flatMap((x) => {
-              if (used.end <= x.start || used.start >= x.end) return [x];
-              const out: Interval[] = [];
-              if (used.start > x.start) out.push({ start: x.start, end: used.start });
-              if (used.end < x.end) out.push({ start: used.end, end: x.end });
-              return out;
-            })
-            .filter((x) => x.end - x.start >= 15)
-            .sort((a, b) => a.start - b.start);
-          lastEnd[d] = s + len;
-          remaining -= len;
-          break; // re-scan intervals of the day after mutation
-        }
-      }
       // keep looping a pass until no progress
       let progress = true;
       while (remaining > 0 && progress) {
