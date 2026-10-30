@@ -21,8 +21,8 @@ export function TaskForm({ open, onOpenChange, task }: { open: boolean; onOpenCh
   const set = <K extends keyof Task>(k: K, v: Task[K]) => setT((x) => ({ ...x, [k]: v }));
 
   function save() {
-    if (!t.title.trim()) return toast.error("Task title is required.");
-    if (!(t.duration > 0)) return toast.error("Estimated duration must be more than 0 minutes.");
+    if (!t.title.trim()) { toast.error("Task title is required."); return; }
+    if (!(t.duration > 0)) { toast.error("Estimated duration must be more than 0 minutes."); return; }
     const clean: Task = { ...t, dueDate: t.dueDate || undefined, owner: t.owner?.trim() || undefined };
     setData((d) =>
       task

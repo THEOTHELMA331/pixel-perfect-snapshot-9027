@@ -31,8 +31,8 @@ function SettingsPage() {
   const [c, setC] = useState({ title: "", date: isoDate(new Date()), start: "10:00", end: "11:00" });
 
   function addCommitment() {
-    if (!c.title.trim()) return toast.error("Give the commitment a name.");
-    if (c.end <= c.start) return toast.error("End time must be after start time.");
+    if (!c.title.trim()) { toast.error("Give the commitment a name."); return; }
+    if (c.end <= c.start) { toast.error("End time must be after start time."); return; }
     update({ commitments: [...settings.commitments, { id: uid(), ...c }].sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)) });
     setC({ ...c, title: "" });
   }

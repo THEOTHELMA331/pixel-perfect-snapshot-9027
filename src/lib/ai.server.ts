@@ -5,7 +5,7 @@ const MODEL = "openai/gpt-6-astra";
 
 /** Runs one streamed Responses call and returns the final text. */
 export async function runAI(instructions: string, prompt: string): Promise<string> {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("AI is not configured for this app.");
   const provider = createOpenAI({
     baseURL: "https://ai.gateway.lovable.dev/v1",

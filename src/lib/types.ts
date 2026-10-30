@@ -6,18 +6,18 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  dueDate?: string; // YYYY-MM-DD
+  dueDate?: string | undefined; // YYYY-MM-DD
   duration: number; // minutes
   priority: Priority;
   category: string;
   status: TaskStatus;
   preferredTime: PreferredTime;
-  owner?: string;
-  dependsOn?: string[];
-  sourceMeetingId?: string;
-  sourceMeetingTitle?: string;
+  owner?: string | undefined;
+  dependsOn?: string[] | undefined;
+  sourceMeetingId?: string | undefined;
+  sourceMeetingTitle?: string | undefined;
   createdAt: string;
-  completedAt?: string;
+  completedAt?: string | undefined;
 }
 
 export interface ActionItem {
@@ -78,7 +78,7 @@ export interface Settings {
 }
 
 export interface ScheduleBlock {
-  taskId?: string;
+  taskId?: string | undefined;
   title: string;
   date: string;
   start: number; // minutes from midnight
