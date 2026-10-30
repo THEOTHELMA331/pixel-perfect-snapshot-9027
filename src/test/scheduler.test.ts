@@ -24,7 +24,7 @@ describe("scheduler", () => {
     const tasks = [mk({ id: "a", duration: 120 }), mk({ id: "b", duration: 90 }), mk({ id: "c", duration: 45 })];
     const s = generateSchedule(tasks, defaultSettings, MON, "day");
     const b = s.blocks.filter((x) => x.kind !== "break").sort((x, y) => x.start - y.start);
-    for (let i = 1; i < b.length; i++) expect(b[i].start).toBeGreaterThanOrEqual(b[i - 1].end);
+    for (let i = 1; i < b.length; i++) expect(b[i]!.start).toBeGreaterThanOrEqual(b[i - 1]!.end);
   });
 
   it("reports tasks that cannot fit instead of dropping them", () => {

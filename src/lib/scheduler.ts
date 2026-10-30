@@ -2,7 +2,7 @@ import type { Commitment, Schedule, ScheduleBlock, Settings, Task, Unscheduled }
 
 export const toMin = (hhmm: string) => {
   const [h, m] = hhmm.split(":").map(Number);
-  return h * 60 + (m || 0);
+  return (h ?? 0) * 60 + (m || 0);
 };
 export const fmtMin = (m: number) =>
   `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
@@ -125,7 +125,7 @@ export function generateSchedule(
       while (remaining > 0 && progress) {
         progress = false;
         for (const d of eligibleDays) {
-          const iv = free[d].find((x) => {
+          const iv = free[d]!.find((x) => {
             const s = pass ? Math.max(x.start, pass.start) : x.start;
             const e = pass ? Math.min(x.end, pass.end) : x.end;
             return e - s >= Math.min(15, remaining);
@@ -136,7 +136,7 @@ export function generateSchedule(
           const len = Math.min(remaining, settings.maxSession, e - s);
           placed.push({ taskId: t.id, title: t.title, date: d, start: s, end: s + len, kind: "task" });
           const used = { start: s, end: s + len + settings.breakMinutes };
-          free[d] = free[d]
+          free[d] = free[d]!
             .flatMap((x) => {
               if (used.end <= x.start || used.start >= x.end) return [x];
               const out: Interval[] = [];
@@ -156,13 +156,13 @@ export function generateSchedule(
     if (remaining > 0) {
       // roll back partial placement so we never pretend a task is covered
       for (const b of placed) {
-        free[b.date].push({ start: b.start, end: b.end + settings.breakMinutes });
-        free[b.date].sort((a, c) => a.start - c.start);
+        free[b.date]!.push({ start: b.start, end: b.end + settings.breakMinutes });
+        free[b.date]!.sort((a, c) => a.start - c.start);
       }
       const reason =
         eligibleDays.length === 0
           ? `Deadline (${t.dueDate}) falls before any available working day in this period.`
-          : t.dueDate && t.dueDate >= today && t.dueDate < allDays[allDays.length - 1]
+          : t.dueDate && t.dueDate >= today && t.dueDate < allDays[allDays.length - 1]!
             ? `Not enough free time before the ${t.dueDate} deadline (needs ${t.duration} min).`
             : `Not enough free time in this period (needs ${t.duration} min).`;
       unscheduled.push({ taskId: t.id, title: t.title, reason });
@@ -176,8 +176,8 @@ export function generateSchedule(
   for (const d of days) {
     const dayBlocks = taskBlocks.filter((b) => b.date === d).sort((a, b) => a.start - b.start);
     for (let i = 0; i < dayBlocks.length - 1; i++) {
-      const gapStart = dayBlocks[i].end;
-      const gapEnd = Math.min(dayBlocks[i + 1].start, gapStart + settings.breakMinutes);
+      const gapStart = dayBlocks[i]!.end;
+      const gapEnd = Math.min(dayBlocks[i + 1]!.start, gapStart + settings.breakMinutes);
       if (settings.breakMinutes > 0 && gapEnd > gapStart) {
         blocks.push({ title: "Break", date: d, start: gapStart, end: gapEnd, kind: "break" });
       }
